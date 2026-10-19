@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Start and complete a focus session",
+    "sanity": true,
+    "viewport": "desktop",
+    "covers": [
+      "focus timer start and countdown",
+      "session state persistence",
+      "session completion statistics"
+    ],
+    "description": "Verifies a focus session can be started and its active state is shown.",
+    "steps": [
+      "Open the Home dashboard",
+      "Choose 25 minutes and start focus",
+      "Confirm the session",
+      "Verify the active countdown and lock status are visible"
+    ],
+    "expected": "The active session countdown is visible and the session is marked active."
+  },
+  {
+    "name": "Edit the distraction blocklist",
+    "viewport": "desktop",
+    "covers": ["app blocklist toggles", "remove app entries from the blocklist", "website rule creation, deletion, and validation"],
+    "description": "Verifies blocklist controls update visible selections and website rules validate input.",
+    "steps": [
+      "Open Blocklist",
+      "Toggle one app rule off and on",
+      "Add a valid website domain",
+      "Remove an app entry and verify it disappears",
+      "Try submitting an empty domain",
+      "Delete a website rule and verify it disappears"
+    ],
+    "expected": "App selection changes visibly, app and website rules can be removed when no focus session is active, a valid domain is added, and an empty domain is rejected with a validation message."
+  },
+  {
+    "name": "Save a weekly schedule",
+    "viewport": "desktop",
+    "covers": [
+      "schedule configuration",
+      "schedule validation",
+      "schedule persistence"
+    ],
+    "description": "Verifies a weekday schedule can be configured and saved.",
+    "steps": [
+      "Open Schedule",
+      "Set a start and end time and choose weekdays",
+      "Save the schedule",
+      "Reopen Schedule"
+    ],
+    "expected": "The enabled schedule and selected weekdays remain displayed, and the live schedule check shows whether the current local time is inside the selected window or waiting for it."
+  },
+  {
+    "name": "Use Gridlock on a mobile viewport and manage the signed-in account",
+    "viewport": "mobile",
+    "covers": [
+      "responsive navigation",
+      "authentication sign-in and sign-out",
+      "settings and permission disclosures"
+    ],
+    "description": "Verifies mobile navigation and account controls remain usable and platform limitations are disclosed.",
+    "steps": [
+      "Open the app on a mobile viewport",
+      "Navigate to Settings",
+      "Review permission guidance",
+      "Sign in with an existing test account if needed",
+      "Click the signed-in profile once and verify the email and Sign out action appear without logging out",
+      "Click Sign out and verify the guest account prompt returns"
+    ],
+    "expected": "Navigation remains usable, signed-in account details remain visible when account options are opened, sign-out occurs only after selecting Sign out, and permission guidance clearly states this web app cannot enforce Android-wide blocking."
+  },
+  {
+    "name": "Export the blocker configuration",
+    "viewport": "desktop",
+    "covers": [
+      "export website and app rules for local enforcement",
+      "configuration handoff to Chrome extension and Windows companion",
+      "dashboard timer start and stop messages to configured Chrome extension"
+    ],
+    "description": "Verifies the Blocklist page exposes an export action for transferring rules to the local enforcement components.",
+    "steps": [
+      "Open Blocklist",
+      "Add a valid website domain",
+      "Click Export setup for blockers",
+      "Verify a JSON configuration download is initiated",
+      "Open Settings and paste the installed extension ID into Chrome website blocking settings",
+      "Start a focus session and verify the dashboard attempts to send start/end signals to the extension"
+    ],
+    "expected": "A vexgridlock-blocking-config.json file is downloaded containing the current blocklist and schedule settings, and the configured extension ID is stored for timer integration."
+  }
+]

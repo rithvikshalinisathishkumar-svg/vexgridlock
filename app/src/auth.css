@@ -1,0 +1,30 @@
+.auth-backdrop { z-index: 100; }
+.account-menu, .top-account-menu { position: relative; margin: 8px 4px 12px; padding: 12px; border: 1px solid #2b3850; border-radius: 10px; background: #111a2a; box-shadow: 0 12px 28px #0003; }
+.extension-id-label { display: grid; gap: 7px; margin: 14px 0 8px; color: #aab4c8; font-size: 13px; font-weight: 600; }
+.extension-id-input { width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #35415b; border-radius: 9px; background: #0d1525; color: #eef2ff; font: inherit; }
+.extension-id-input:focus { outline: 2px solid #6865ed; outline-offset: 1px; }
+.blocker-export-row { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+.blocker-export-row button { display: inline-flex; align-items: center; gap: 7px; }
+.schedule-status { display: flex; align-items: flex-start; gap: 10px; margin: 14px 0; padding: 12px; border: 1px solid #2b3850; border-radius: 10px; background: #111a2a; color: #aab4c8; }
+.schedule-status svg { flex: 0 0 auto; margin-top: 2px; color: #a9a7ff; }
+.schedule-status div { display: grid; gap: 4px; min-width: 0; }
+.schedule-status strong { color: #eef2ff; font-size: 13px; }
+.schedule-status span { font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.top-account-menu { position: absolute; z-index: 80; right: 18px; top: 62px; min-width: 220px; margin: 0; }
+.account-menu-email { overflow-wrap: anywhere; color: #aab4c8; font-size: 12px; margin-bottom: 10px; }
+.account-menu-signout { display: flex; align-items: center; gap: 8px; width: 100%; border: 1px solid #35415b; border-radius: 8px; background: #182338; color: #eef2ff; padding: 9px 10px; text-align: left; font: inherit; cursor: pointer; }
+.account-menu-signout:hover { background: #222f47; }
+.auth-modal { width: min(100%, 440px); position: relative; }
+.auth-form { display: grid; gap: 14px; margin-top: 22px; text-align: left; }
+.auth-form label { display: grid; gap: 7px; color: #aab4c8; font-size: 13px; font-weight: 600; }
+.auth-form input { width: 100%; box-sizing: border-box; padding: 13px 14px; border: 1px solid #35415b; border-radius: 10px; background: #0d1525; color: #eef2ff; font: inherit; outline: none; }
+.auth-form input:focus { border-color: #7777ff; box-shadow: 0 0 0 3px #6868ff26; }
+.auth-form .full-btn { width: 100%; margin-top: 4px; }
+.auth-form .full-btn:disabled, .auth-text-btn:disabled { opacity: .65; cursor: wait; }
+.auth-message { margin: 0; color: #ffb4b4; font-size: 13px; line-height: 1.5; }
+.auth-text-btn, .auth-switch button { background: none; border: 0; color: #a9a7ff; cursor: pointer; font: inherit; font-weight: 600; }
+.auth-text-btn { display: block; margin: 14px auto 0; }
+.auth-switch { margin-top: 20px; color: #aab4c8; text-align: center; font-size: 13px; }
+.auth-switch button { padding: 4px; }
+.auth-modal .modal-close { position: absolute; right: 12px; top: 12px; }
+@media (max-width: 480px) { .auth-modal { padding: 24px 18px; } }

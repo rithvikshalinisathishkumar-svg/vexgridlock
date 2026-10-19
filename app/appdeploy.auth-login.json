@@ -1,0 +1,14 @@
+{
+  "methods": ["google", "email"],
+  "headline": "Welcome to Gridlock",
+  "subtitle": "Sign in to keep your focus journey connected.",
+  "style": {
+    "mode": "dark",
+    "accentColor": "#6868ff",
+    "backgroundColor": "#0a0f1a",
+    "panelColor": "#141d30",
+    "textColor": "#eef2ff",
+    "fontFamily": "DM Sans, system-ui, sans-serif",
+    "borderRadius": 14
+  }
+}
