@@ -104,7 +104,7 @@
     <p id="message" role="status" aria-live="polite"></p>
     <footer>Focus with intention.<br>Created by <strong>Rithvik.S</strong></footer>
   </main>
-
+  
   <script type="module">
     import { initializeApp } from
       "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
@@ -167,9 +167,8 @@
           );
           say("Account created and signed in successfully!", true);
         } else {
-          await signInWithEmailAndPassword(
-            auth, email.value.trim(), password.value
-          );
+        await signInWithEmailAndPassword(auth, email, password);
+window.location.href = "./about.html";
           say("Signed in successfully!", true);
         }
       } catch (error) {
