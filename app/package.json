@@ -1,3 +1,4 @@
+
 {
   "name": "vite-react-app",
   "private": true,
@@ -12,7 +13,8 @@
     "firebase": "^12.4.0",
     "lucide-react": "^0.469.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "xlsx-js-style": "^1.2.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.0.0"
