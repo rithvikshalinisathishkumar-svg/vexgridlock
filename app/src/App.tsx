@@ -1181,25 +1181,69 @@ function App() {
                     <div className="section-kicker">SESSION HISTORY</div>
                     <h2>Your recent sessions</h2>
                   </div>
-                  <button
-                    className="secondary-btn compact"
-                    onClick={() => {
-                      const csv =
-                        'date,minutes,status\n' +
-                        sessions
-                          .map(s => s.date + ',' + s.minutes + ',' + s.status)
-                          .join('\n');
-                      const blob = new Blob([csv], { type: 'text/csv' });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = 'vexgridlock-sessions.csv';
-                      a.click();
-                      URL.revokeObjectURL(url);
-                    }}
-                  >
-                    Export CSV
-                  </button>
+                  
+<button
+  className="secondary-btn compact"
+  onClick={() => {
+    const escapeCsv = (value: unknown) =>
+      `"${String(value ?? '').replace(/"/g, '""')}"`;
+
+    const completedSessions = sessions.filter(
+      s => s.status === 'Completed'
+    );
+
+    const interruptedSessions = sessions.filter(
+      s => s.status === 'Interrupted'
+    );
+
+    const totalCompletedMinutes = completedSessions.reduce(
+      (sum, s) => sum + Number(s.minutes || 0),
+      0
+    );
+
+    const rows: (string | number)[][] = [
+      ['VexGridLock - Focus Session Report'],
+      ['Exported at', new Date().toLocaleString()],
+      [],
+      ['Date', 'Duration (minutes)', 'Status'],
+      ...sessions.map(s => [s.date, s.minutes, s.status]),
+      [],
+      ['Total sessions', sessions.length],
+      ['Completed sessions', completedSessions.length],
+      ['Interrupted sessions', interruptedSessions.length],
+      ['Total completed minutes', totalCompletedMinutes],
+    ];
+
+    const csv =
+      '\uFEFF' +
+      rows
+        .map(row => row.map(escapeCsv).join(','))
+        .join('\r\n');
+
+    const blob = new Blob([csv], {
+      type: 'text/csv;charset=utf-8;',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `vexgridlock-report-${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    setToast('Focus session report exported successfully.');
+  }}
+>
+  <Download size={15} />
+  Export CSV
+</button>
                 </div>
                 {sessions.length === 0 ? (
                   <div className="empty-state">
