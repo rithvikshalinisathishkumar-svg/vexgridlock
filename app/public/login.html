@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login | VexGridLock</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      font-family: system-ui, sans-serif;
+      color: #f8fafc;
+      background: radial-gradient(circle at top left, #312e81, transparent 45%),
+                  linear-gradient(135deg, #080d1b, #111827);
+    }
+    .card {
+      width: 100%;
+      max-width: 410px;
+      padding: 32px;
+      border: 1px solid #334155;
+      border-radius: 22px;
+      background: #111827;
+      box-shadow: 0 25px 70px #0007;
+    }
+    .logo {
+      font-size: 27px;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: -1px;
+    }
+    .logo span { color: #a78bfa; }
+    h1 { text-align: center; margin: 25px 0 8px; }
+    .sub { text-align: center; color: #94a3b8; font-size: 14px; }
+    label { display: block; margin-top: 18px; font-size: 13px; }
+    input {
+      width: 100%;
+      margin-top: 8px;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #0b1220;
+      color: white;
+      font: inherit;
+    }
+    input:focus { outline: 2px solid #8b5cf6; }
+    button {
+      cursor: pointer;
+      font: inherit;
+    }
+    .primary {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      border: 0;
+      border-radius: 10px;
+      background: linear-gradient(100deg, #8b5cf6, #4f46e5);
+      color: white;
+      font-weight: 750;
+    }
+    .primary:disabled { opacity: .6; }
+    .links {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 17px;
+    }
+    .link {
+      border: 0;
+      background: none;
+      color: #c4b5fd;
+      font-size: 12px;
+    }
+    #message { font-size: 13px; line-height: 1.5; color: #fca5a5; }
+    footer { margin-top: 25px; text-align: center; color: #94a3b8; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="logo">◈ VexGrid<span>Lock</span></div>
+    <h1 id="heading">Welcome back</h1>
+    <p class="sub" id="subheading">Sign in to your focus space.</p>
+
+    <form id="authForm">
+      <label>Email address
+        <input id="email" type="email" autocomplete="email"
+          placeholder="you@example.com" required>
+      </label>
+      <label>Password
+        <input id="password" type="password" minlength="6"
+          autocomplete="current-password" placeholder="Your password" required>
+      </label>
+      <button class="primary" id="submit" type="submit">Sign in</button>
+    </form>
+
+    <div class="links">
+      <button class="link" id="reset" type="button">Forgot password?</button>
+      <button class="link" id="toggle" type="button">Create account</button>
+    </div>
+    <p id="message" role="status" aria-live="polite"></p>
+    <footer>Focus with intention.<br>Created by <strong>Rithvik.S</strong></footer>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from
+      "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCEEf66uWiLNziniI1zbBa_0wHddV0MSyU",
+      authDomain: "vexgridlock.firebaseapp.com",
+      projectId: "vexgridlock",
+      storageBucket: "vexgridlock.firebasestorage.app",
+      messagingSenderId: "257376608146",
+      appId: "1:257376608146:web:85fd2d36b1685730aaab4b",
+      measurementId: "G-QD8C130SB4"
+    };
+
+    const auth = getAuth(initializeApp(firebaseConfig));
+    const form = document.getElementById("authForm");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const submit = document.getElementById("submit");
+    const toggle = document.getElementById("toggle");
+    const reset = document.getElementById("reset");
+    const message = document.getElementById("message");
+    let mode = "signin";
+
+    function say(text, success = false) {
+      message.textContent = text;
+      message.style.color = success ? "#86efac" : "#fca5a5";
+    }
+
+    toggle.addEventListener("click", () => {
+      mode = mode === "signin" ? "signup" : "signin";
+      document.getElementById("heading").textContent =
+        mode === "signup" ? "Create account" : "Welcome back";
+      document.getElementById("subheading").textContent =
+        mode === "signup" ? "Start building better focus habits." :
+        "Sign in to your focus space.";
+      submit.textContent = mode === "signup" ? "Create account" : "Sign in";
+      toggle.textContent = mode === "signup" ?
+        "Already have an account?" : "Create account";
+      reset.hidden = mode === "signup";
+      password.autocomplete =
+        mode === "signup" ? "new-password" : "current-password";
+      say("");
+    });
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      submit.disabled = true;
+      say("");
+      try {
+        if (mode === "signup") {
+          await createUserWithEmailAndPassword(
+            auth, email.value.trim(), password.value
+          );
+          say("Account created and signed in successfully!", true);
+        } else {
+          await signInWithEmailAndPassword(
+            auth, email.value.trim(), password.value
+          );
+          say("Signed in successfully!", true);
+        }
+      } catch (error) {
+        const errors = {
+          "auth/email-already-in-use": "That email already has an account.",
+          "auth/invalid-credential": "Email or password is incorrect.",
+          "auth/weak-password": "Use a stronger password of at least 6 characters.",
+          "auth/invalid-email": "Please enter a valid email address.",
+          "auth/too-many-requests": "Too many attempts. Please wait and try again.",
+          "auth/operation-not-allowed": "Enable Email/Password in Firebase Authentication.",
+          "auth/network-request-failed": "Check your internet connection."
+        };
+        say(errors[error.code] || "Authentication failed. Please try again.");
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    reset.addEventListener("click", async () => {
+      if (!email.value.trim()) {
+        say("Enter your email address first.");
+        email.focus();
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email.value.trim());
+        say("If the account exists, a password reset email will be sent.", true);
+      } catch {
+        say("Could not send reset email. Check the address and Firebase settings.");
+      }
+    });
+  </script>
+</body>
+</html>
