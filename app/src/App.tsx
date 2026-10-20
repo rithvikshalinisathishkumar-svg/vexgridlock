@@ -38,7 +38,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-
+import * as XLSX from 'xlsx-js-style';
 const starterApps = [
   { name: 'YouTube', icon: '▶', color: '#f43f46', enabled: true },
   { name: 'Instagram', icon: '◎', color: '#c43c9a', enabled: true },
@@ -1185,64 +1185,255 @@ function App() {
 <button
   className="secondary-btn compact"
   onClick={() => {
-    const escapeCsv = (value: unknown) =>
-      `"${String(value ?? '').replace(/"/g, '""')}"`;
-
-    const completedSessions = sessions.filter(
+    const completed = sessions.filter(
       s => s.status === 'Completed'
     );
 
-    const interruptedSessions = sessions.filter(
+    const interrupted = sessions.filter(
       s => s.status === 'Interrupted'
     );
 
-    const totalCompletedMinutes = completedSessions.reduce(
+    const totalMinutes = completed.reduce(
       (sum, s) => sum + Number(s.minutes || 0),
       0
     );
 
-    const rows: (string | number)[][] = [
-      ['VexGridLock - Focus Session Report'],
-      ['Exported at', new Date().toLocaleString()],
-      [],
+    const rows = [
+      ['VEXGRIDLOCK | FOCUS REPORT', '', ''],
+      ['Personal productivity report', new Date().toLocaleDateString(), ''],
+      ['', '', ''],
+      ['PERFORMANCE SUMMARY', '', ''],
+      ['Metric', 'Value', ''],
+      ['Total sessions', sessions.length, ''],
+      ['Completed sessions', completed.length, ''],
+      ['Interrupted sessions', interrupted.length, ''],
+      ['Completed focus time (minutes)', totalMinutes, ''],
+      [
+        'Completed focus time (hours)',
+        Number((totalMinutes / 60).toFixed(2)),
+        '',
+      ],
+      ['', '', ''],
+      ['SESSION HISTORY', '', ''],
       ['Date', 'Duration (minutes)', 'Status'],
-      ...sessions.map(s => [s.date, s.minutes, s.status]),
-      [],
-      ['Total sessions', sessions.length],
-      ['Completed sessions', completedSessions.length],
-      ['Interrupted sessions', interruptedSessions.length],
-      ['Total completed minutes', totalCompletedMinutes],
+      ...sessions.map(s => [
+        s.date,
+        Number(s.minutes || 0),
+        s.status,
+      ]),
     ];
 
-    const csv =
-      '\uFEFF' +
-      rows
-        .map(row => row.map(escapeCsv).join(','))
-        .join('\r\n');
+    const ws = XLSX.utils.aoa_to_sheet(rows);
 
-    const blob = new Blob([csv], {
-      type: 'text/csv;charset=utf-8;',
-    });
+    ws['!cols'] = [
+      { wch: 34 },
+      { wch: 25 },
+      { wch: 20 },
+    ];
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    ws['!rows'] = rows.map((_, i) => ({
+      hpt: [0, 3, 11].includes(i) ? 30 : 22,
+    }));
 
-    link.href = url;
-    link.download = `vexgridlock-report-${new Date()
-      .toISOString()
-      .slice(0, 10)}.csv`;
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 2 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 2 } },
+      { s: { r: 3, c: 0 }, e: { r: 3, c: 2 } },
+      { s: { r: 11, c: 0 }, e: { r: 11, c: 2 } },
+    ];
 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    const navy = '14243A';
+    const blue = '2563EB';
+    const paleBlue = 'EAF2FF';
+    const white = 'FFFFFF';
+    const grey = 'F3F6FA';
+    const green = 'DCFCE7';
+    const red = 'FEE2E2';
 
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const styleRange = (
+      row: number,
+      startCol: number,
+      endCol: number,
+      style: Record<string, unknown>
+    ) => {
+      for (let col = startCol; col <= endCol; col++) {
+        const cell = XLSX.utils.encode_cell({
+          r: row,
+          c: col,
+        });
 
-    setToast('Focus session report exported successfully.');
+        if (ws[cell]) {
+          ws[cell].s = style;
+        }
+      }
+    };
+
+    const titleStyle = {
+      fill: { fgColor: { rgb: navy } },
+      font: {
+        name: 'Aptos Display',
+        sz: 18,
+        bold: true,
+        color: { rgb: white },
+      },
+      alignment: {
+        vertical: 'center',
+        horizontal: 'left',
+        indent: 1,
+      },
+    };
+
+    const sectionStyle = {
+      fill: { fgColor: { rgb: blue } },
+      font: {
+        name: 'Aptos',
+        sz: 11,
+        bold: true,
+        color: { rgb: white },
+      },
+      alignment: {
+        vertical: 'center',
+        horizontal: 'left',
+        indent: 1,
+      },
+    };
+
+    const headerStyle = {
+      fill: { fgColor: { rgb: navy } },
+      font: {
+        name: 'Aptos',
+        sz: 11,
+        bold: true,
+        color: { rgb: white },
+      },
+      alignment: {
+        horizontal: 'left',
+        vertical: 'center',
+        wrapText: true,
+      },
+      border: {
+        bottom: {
+          style: 'medium',
+          color: { rgb: blue },
+        },
+      },
+    };
+
+    styleRange(0, 0, 2, titleStyle);
+    styleRange(3, 0, 2, sectionStyle);
+    styleRange(11, 0, 2, sectionStyle);
+    styleRange(4, 0, 1, headerStyle);
+    styleRange(12, 0, 2, headerStyle);
+
+    for (let r = 5; r <= 9; r++) {
+      styleRange(r, 0, 1, {
+        fill: {
+          fgColor: {
+            rgb: r % 2 === 0 ? white : grey,
+          },
+        },
+        font: {
+          name: 'Aptos',
+          sz: 11,
+          color: { rgb: navy },
+        },
+        alignment: { vertical: 'center' },
+      });
+
+      const valueCell = `B${r + 1}`;
+
+      if (ws[valueCell]) {
+        ws[valueCell].s = {
+          fill: { fgColor: { rgb: paleBlue } },
+          font: {
+            name: 'Aptos',
+            sz: 11,
+            bold: true,
+            color: { rgb: navy },
+          },
+          alignment: {
+            vertical: 'center',
+            horizontal: 'left',
+          },
+        };
+      }
+    }
+
+    for (let r = 13; r < rows.length; r++) {
+      const fill = r % 2 === 0 ? white : grey;
+
+      styleRange(r, 0, 2, {
+        fill: { fgColor: { rgb: fill } },
+        font: {
+          name: 'Aptos',
+          sz: 10,
+          color: { rgb: navy },
+        },
+        alignment: { vertical: 'center' },
+        border: {
+          bottom: {
+            style: 'hair',
+            color: { rgb: 'DCE4EE' },
+          },
+        },
+      });
+
+      const statusCell = `C${r + 1}`;
+
+      if (ws[statusCell]) {
+        const isDone = ws[statusCell].v === 'Completed';
+
+        ws[statusCell].s = {
+          fill: {
+            fgColor: { rgb: isDone ? green : red },
+          },
+          font: {
+            name: 'Aptos',
+            sz: 10,
+            bold: true,
+            color: {
+              rgb: isDone ? '166534' : '991B1B',
+            },
+          },
+          alignment: {
+            vertical: 'center',
+            horizontal: 'center',
+          },
+        };
+      }
+    }
+
+    ws['!autofilter'] = {
+      ref: `A13:C${Math.max(13, rows.length)}`,
+    };
+
+    const wb = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      ws,
+      'Focus Report'
+    );
+
+    wb.Props = {
+      Title: 'VexGridLock Focus Report',
+      Subject: 'Focus session history and performance summary',
+      Author: 'VexGridLock',
+      CreatedDate: new Date(),
+    };
+
+    XLSX.writeFile(
+      wb,
+      `VexGridLock-Focus-Report-${new Date()
+        .toISOString()
+        .slice(0, 10)}.xlsx`
+    );
+
+    setToast('Formatted Excel report exported successfully.');
   }}
 >
   <Download size={15} />
-  Export CSV
+  Export Excel Report
 </button>
                 </div>
                 {sessions.length === 0 ? (
