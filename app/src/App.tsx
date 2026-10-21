@@ -183,8 +183,14 @@ function App() {
         const key = windowDate + '-' + start + '-' + end;
         setScheduleStatus('ACTIVE now · ends at ' + endAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
         if (!active && lastAutoStartKey !== key) {
-          const secondsLeft = Math.max(1, Math.ceil((endAt.getTime() - now.getTime()) / 1000));
-          setDuration(Math.max(1, Math.ceil(secondsLeft / 60)));
+         const secondsLeft = Math.min(
+  90 * 60,
+  Math.max(
+    1,
+    Math.ceil((endAt.getTime() - now.getTime()) / 1000)
+  )
+);
+         setDeadline(now.getTime() + secondsLeft * 1000);
           setDeadline(endAt.getTime());
           setRemaining(secondsLeft);
           setActive(true);
