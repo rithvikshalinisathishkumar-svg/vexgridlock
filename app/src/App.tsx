@@ -190,18 +190,19 @@ function App() {
     Math.ceil((endAt.getTime() - now.getTime()) / 1000)
   )
 );
-         setDeadline(now.getTime() + secondsLeft * 1000);
-          setDeadline(endAt.getTime());
-          setRemaining(secondsLeft);
-          setActive(true);
-          setLastAutoStartKey(key);
-          syncExtension('startFocus', { activeUntil: endAt.getTime(), config: currentBlockerConfig() });
-          setToast('Your scheduled focus session started.');
-        }
-      } else {
-        setScheduleStatus('Waiting for the next selected day and time (' + start + '–' + end + ').');
-      }
-    };
+       setDeadline(now.getTime() + secondsLeft * 1000);
+setRemaining(secondsLeft);
+setActive(true);
+setLastAutoStartKey(key);
+
+const activeUntil = now.getTime() + secondsLeft * 1000;
+
+syncExtension('startFocus', {
+  activeUntil,
+  config: currentBlockerConfig()
+});
+
+setToast('Your scheduled focus session started.');
 
     checkSchedule();
     const id = window.setInterval(checkSchedule, 10000);
